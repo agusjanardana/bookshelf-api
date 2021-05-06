@@ -1,0 +1,20 @@
+{
+  "name": "bookshelf-code",
+  "version": "1.0.0",
+  "description": "Sebuah tugas besar untuk memenuhi tugas di Dicoding",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "I Gde Bagus Janardana Abasan",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^20.1.2",
+    "dotenv": "^8.6.0",
+    "eslint": "^7.25.0",
+    "eslint-plugin-import": "^2.22.1",
+    "nanoid": "^3.1.22",
+    "nodemon": "^2.0.7"
+  }
+}
