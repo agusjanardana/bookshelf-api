@@ -1,4 +1,8 @@
-const { addBookHandler, getAllBook } = require('../modules/api-handler');
+const {
+  addBookHandler,
+  getAllBook,
+  getBooksDetailed,
+} = require('../modules/api-handler');
 
 const routes = [
   {
@@ -10,6 +14,11 @@ const routes = [
     method: 'GET',
     path: '/books',
     handler: getAllBook,
+  },
+  {
+    method: 'GET',
+    path: '/books/{bookId}',
+    handler: getBooksDetailed,
   },
 ];
 
