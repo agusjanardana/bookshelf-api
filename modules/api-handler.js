@@ -88,26 +88,165 @@ const getAllBook = (request, h) => ({
   },
 });
 
+const getBookByQuery = (request, h) => {
+  const { name, finished, reading } = request.query; // get query dari route
+  const tempBook = [...books]; // simpan semua nilai dalam property dari books ke tempBook
+  let hasilBook = tempBook; // menyimpan tempBook ke variabel hasilbook untuk proses selanjutnya.
+
+  if (name !== undefined) {
+    hasilBook = tempBook.filter((temp) =>
+      temp.name.toLowerCase().includes(name.toLowerCase)
+    ); //sumber case sensitive di stackoverflow.
+  }
+  if (finished !== undefined) {
+    hasilBook = tempBook.filter((temp) => temp.finished === '1');
+  }
+
+  if (reading !== undefined) {
+    hasilBook = tempBook.filter((temp) => temp.reading === '1');
+  }
+  // semua nilai yang dibutuhkan disimpan di variabel hasilBook untuk req by query.
+
+  const hasilBook2 = hasilBook.map((temp) => ({
+    id: temp.id,
+    name: temp.name,
+    publisher: temp.publisher,
+  }));
+
+  return h
+    .response({
+      status: 'success',
+      message: 'Data didapatkan',
+      books: [
+        {
+          hasilBook2,
+        },
+      ],
+    })
+    .code(200);
+};
+
 const getBooksDetailed = (request, h) => {
   const { bookId } = request.params;
 
   const book = books.filter((x) => x.id === bookId)[0];
 
   if (book !== undefined) {
-    const response = h.response({
-      status: 'success',
-      data: { book },
-    });
+    // const response = h.response({
+    //   status: 'success',
+    //   data: { book },
+    // });
 
-    response.code(200);
-    return response;
+    // response.code(200);
+    // return response;
+
+    return h.response({ status: 'success', data: { book } }).code(200);
   }
 
-  const response = h.response({
-    status: 'fail',
-    message: 'Buku tidak ditemukan',
-  });
-  response.code(404);
-  return response;
+  //   const response = h.response({
+  //     status: 'fail',
+  //     message: 'Buku tidak ditemukan',
+  //   });
+  //   response.code(404);
+  //   return response;
+
+  return h
+    .response({ status: 'fail', message: 'Buku tidak ditemukan' })
+    .code(404);
 };
-module.exports = { addBookHandler, getAllBook, getBooksDetailed };
+
+const editBookById = (request, h) => {
+  const { bookId } = request.params;
+
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = request.payload;
+
+  const updatedAt = new Date().toISOString();
+
+  const index = books.findIndex((book) => book.id === bookId);
+
+  // jika array tidak kosong atau id telah ditemukan, maka akan dijalankan
+  if (index !== -1) {
+    if (!name) {
+      return h
+        .response({
+          status: 'fail',
+          message: 'Gagal memperbarui buku. Mohon isi nama buku',
+        })
+        .code(400);
+    }
+
+    if (readPage > pageCount) {
+      return h
+        .response({
+          status: 'fail',
+          message:
+            'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+        })
+        .code(400);
+    }
+
+    books[index] = {
+      ...books[index],
+      name,
+      year,
+      author,
+      summary,
+      publisher,
+      pageCount,
+      readPage,
+      reading,
+      updatedAt,
+    };
+    return h
+      .response({
+        status: 'success',
+        message: 'Buku berhasil diperbarui',
+      })
+      .code(200);
+  }
+
+  return h
+    .response({
+      status: 'fail',
+      message: 'Gagal memperbarui buku. Id tidak ditemukan',
+    })
+    .code(404);
+};
+
+const deleteBookById = (request, h) => {
+  const { bookId } = request.params;
+
+  const index = books.findIndex((book) => book.id === bookId);
+
+  if (index !== -1) {
+    books.splice(index, 1);
+    return h
+      .response({ status: 'success', message: 'Buku berhasil dihapus' })
+      .code(200);
+  }
+
+  return h
+    .response({
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan',
+    })
+    .code(404);
+};
+
+module.exports = {
+  addBookHandler,
+  getAllBook,
+  getBooksDetailed,
+  editBookById,
+  deleteBookById,
+  getBookByQuery,
+};
