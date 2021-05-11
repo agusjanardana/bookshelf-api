@@ -4,7 +4,6 @@ const {
   getBooksDetailed,
   editBookById,
   deleteBookById,
-  getBookByQuery,
 } = require('../modules/api-handler');
 
 const routes = [
@@ -15,14 +14,14 @@ const routes = [
   },
   {
     method: 'GET',
-    path: '/books',
+    path: '/{books?}',
     handler: getAllBook,
   },
-  {
-    method: 'GET',
-    path: '/books/',
-    handler: getBookByQuery,
-  },
+  // {
+  //   method: 'GET',
+  //   path: '/books/',
+  //   handler: getBookByQuery,
+  // },
   {
     method: 'GET',
     path: '/books/{bookId}',

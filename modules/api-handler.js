@@ -75,53 +75,88 @@ const addBookHandler = (request, h) => {
     status: 'error',
     message: 'Buku gagal ditambahkan',
   });
+  response.code(500);
+  return response;
 };
 
-const getAllBook = (request, h) => ({
-  status: 'success',
-  data: {
-    books: books.map((book) => ({
-      id: book.id,
-      name: book.name,
-      publisher: book.publisher,
-    })),
-  },
-});
+// const getAllBook = (request, h) => ({
+//   status: 'success',
+//   data: {
+//     books: books.map((book) => ({
+//       id: book.id,
+//       name: book.name,
+//       publisher: book.publisher,
+//     })),
+//   },
+// });
 
-const getBookByQuery = (request, h) => {
+const getAllBook = (request, h) => {
   const { name, finished, reading } = request.query; // get query dari route
-  const tempBook = [...books]; // simpan semua nilai dalam property dari books ke tempBook
-  let hasilBook = tempBook; // menyimpan tempBook ke variabel hasilbook untuk proses selanjutnya.
 
   if (name !== undefined) {
-    hasilBook = tempBook.filter((temp) =>
-      temp.name.toLowerCase().includes(name.toLowerCase)
+    let hasilBook = books.filter((temp) =>
+      temp.name.toLowerCase().includes(name.toLowerCase())
     ); //sumber case sensitive di stackoverflow.
+
+    return h
+      .response({
+        status: 'success',
+        data: {
+          books: hasilBook.map((b) => ({
+            id: b.id,
+            name: b.name,
+            publisher: b.publisher,
+          })),
+        },
+      })
+      .code(200);
   }
+
   if (finished !== undefined) {
-    hasilBook = tempBook.filter((temp) => temp.finished === '1');
+    let hasilBook = books.filter(
+      (temp) => temp.finished === (finished === '1')
+    );
+    return h
+      .response({
+        status: 'success',
+        data: {
+          books: hasilBook.map((b) => ({
+            id: b.id,
+            name: b.name,
+            publisher: b.publisher,
+          })),
+        },
+      })
+      .code(200);
   }
 
   if (reading !== undefined) {
-    hasilBook = tempBook.filter((temp) => temp.reading === '1');
-  }
-  // semua nilai yang dibutuhkan disimpan di variabel hasilBook untuk req by query.
+    let hasilBook = books.filter((temp) => temp.reading === (reading === '1'));
 
-  const hasilBook2 = hasilBook.map((temp) => ({
-    id: temp.id,
-    name: temp.name,
-    publisher: temp.publisher,
-  }));
+    return h
+      .response({
+        status: 'success',
+        data: {
+          books: hasilBook.map((b) => ({
+            id: b.id,
+            name: b.name,
+            publisher: b.publisher,
+          })),
+        },
+      })
+      .code(200);
+  }
 
   return h
     .response({
       status: 'success',
-      message: 'Data didapatkan',
-      books: [
-        {
-          hasilBook2,
-        },
-      ],
+      data: {
+        books: books.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
     })
     .code(200);
 };
@@ -248,5 +283,4 @@ module.exports = {
   getBooksDetailed,
   editBookById,
   deleteBookById,
-  getBookByQuery,
 };
